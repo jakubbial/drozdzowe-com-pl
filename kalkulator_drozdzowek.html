@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Drożdżówek</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Segoe UI',sans-serif;background:#faf6f1;color:#3a2f28;padding:20px;max-width:820px;margin:0 auto}
+        h1{text-align:center;margin-bottom:8px;color:#6b4226;font-size:28px}
+        .subtitle{text-align:center;color:#999;margin-bottom:24px;font-size:14px}
+        .card{background:#fff;border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+        .card h2{color:#6b4226;margin-bottom:16px;border-bottom:2px solid #f0e6d8;padding-bottom:8px;font-size:18px}
+        .input-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+        .input-group{display:flex;flex-direction:column}
+        .input-group label{font-weight:600;margin-bottom:4px;font-size:13px}
+        .unit{font-weight:400;color:#999;font-size:11px}
+        .input-group input{padding:10px 12px;border:2px solid #e8ddd0;border-radius:8px;font-size:16px;transition:border-color .2s;width:100%}
+        .input-group input:focus{outline:none;border-color:#c4956a}
+        .flour-input{grid-column:1/-1}
+        .flour-input input{font-size:22px;font-weight:700;text-align:center;background:#fdf8f3}
+        table{width:100%;border-collapse:collapse}
+        th,td{padding:10px 12px;text-align:left;border-bottom:1px solid #f0e6d8}
+        th{background:#fdf8f3;font-weight:600;color:#6b4226;font-size:13px}
+        .grams{font-weight:700;font-size:18px;color:#c4956a}
+        .total-row{background:#6b4226;color:#fff}
+        .total-row td{border:none;font-weight:700;font-size:17px}
+        .hydration-row{background:#eef7ee}
+        .warning{background:#fff3cd;border-left:4px solid #ffc107;padding:10px 14px;border-radius:6px;margin-top:10px;font-size:13px;line-height:1.5}
+        .info{background:#e8f4fd;border-left:4px solid #4da6e8;padding:10px 14px;border-radius:6px;margin-top:10px;font-size:13px;line-height:1.5}
+        .process-step{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid #f0e6d8}
+        .process-step:last-child{border-bottom:none}
+        .step-number{width:34px;height:34px;background:#c4956a;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;font-size:14px}
+        .step-content h3{font-size:15px;margin-bottom:2px}
+        .step-time{display:inline-block;background:#f0e6d8;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:700;color:#6b4226;margin-top:4px}
+        .step-content p{color:#666;font-size:13px;margin-top:6px;line-height:1.5}
+        .total-time{text-align:center;font-size:20px;font-weight:700;color:#6b4226;margin-top:16px;padding:16px;background:#fdf8f3;border-radius:8px}
+        .yeast-note{display:flex;gap:8px;background:#fdf8f3;padding:10px;border-radius:8px;margin-top:12px;font-size:12px;color:#888}
+        .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+        .badge-ok{background:#d4edda;color:#155724}
+        .badge-warn{background:#fff3cd;color:#856404}
+        .badge-danger{background:#f8d7da;color:#721c24}
+        @media(max-width:500px){.input-grid{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+    <h1>🥐 Kalkulator Drożdżówek</h1>
+    <p class="subtitle">Procenty piekarskie – 100% = masa mąki</p>
+
+    <div class="card">
+        <h2>⚙️ Parametry ciasta</h2>
+        <div class="input-grid">
+            <div class="input-group flour-input">
+                <label>🌾 Mąka <span class="unit">(gramy – baza 100%)</span></label>
+                <input type="number" id="flour" value="500" min="100" step="50" oninput="calc()">
+            </div>
+            <div class="input-group">
+                <label>💧 Hydratacja całkowita <span class="unit">(% piek.)</span></label>
+                <input type="number" id="hydration" value="55" min="30" max="80" step="1" oninput="calc()">
+            </div>
+            <div class="input-group">
+                <label>🥚 Jaja <span class="unit">(gramy · 1 jajo ≈ 50g)</span></label>
+                <input type="number" id="eggs" value="100" min="0" step="25" oninput="calc()">
+            </div>
+            <div class="input-group">
+                <label>🍬 Cukier <span class="unit">(% piek.)</span></label>
+                <input type="number" id="sugar" value="17" min="0" max="40" step="1" oninput="calc()">
+            </div>
+            <div class="input-group">
+                <label>🧈 Masło <span class="unit">(% piek.)</span></label>
+                <input type="number" id="butter" value="22" min="0" max="60" step="1" oninput="calc()">
+            </div>
+            <div class="input-group">
+                <label>🧂 Sól <span class="unit">(% piek.)</span></label>
+                <input type="number" id="salt" value="1.8" min="0" max="3" step="0.1" oninput="calc()">
+            </div>
+            <div class="input-group">
+                <label>🫧 Drożdże świeże <span class="unit">(% piek.)</span></label>
+                <input type="number" id="yeast" value="4" min="0.5" max="10" step="0.5" oninput="calc()">
+            </div>
+        </div>
+        <div class="yeast-note">
+            💡 Drożdże suche instant = podziel świeże przez 3 &nbsp;|&nbsp; Suche aktywne = podziel przez 2.5
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>📊 Składniki – wynik</h2>
+        <table>
+            <thead><tr><th>Składnik</th><th>%</th><th>Gramy</th><th>Status</th></tr></thead>
+            <tbody id="results"></tbody>
+        </table>
+        <div id="warnings"></div>
+    </div>
+
+    <div class="card">
+        <h2>👨‍🍳 Proces – krok po kroku</h2>
+        <div id="process"></div>
+        <div id="totalTime" class="total-time"></div>
+    </div>
+
+<script>
+function calc(){
+    const f=n('flour')||500, hyd=n('hydration')||55, eg=n('eggs')||0;
+    const sPct=n('sugar')||0, bPct=n('butter')||0, slPct=n('salt')||0, yPct=n('yeast')||4;
+    const sugar=f*sPct/100, butter=f*bPct/100, salt=f*slPct/100, yeast=f*yPct/100;
+    const egWater=eg*.75, totalWater=f*hyd/100;
+    const milkWater=totalWater-egWater;
+    const milk=Math.max(0,milkWater/.87);
+    const milkPct=(milk/f*100), egPct=(eg/f*100);
+    const realHyd=((milk*.87+egWater)/f*100);
+    const total=f+milk+eg+sugar+butter+salt+yeast;
+
+    let h='';
+    h+=row('🌾 Mąka (550/650)','100',f,badge('ok','baza'));
+    h+=row('🥛 Mleko',milkPct.toFixed(1),milk,milk<10?badge('warn','mało'):'');
+    h+=row('🥚 Jaja ('+Math.round(eg/50)+' szt.)',egPct.toFixed(1),eg,egPct>25?badge('warn','dużo'):'');
+    h+=row('🧈 Masło',bPct,butter,bPct>30?badge('warn','brioche'):bPct>=15?badge('ok','ok'):'');
+    h+=row('🍬 Cukier',sPct,sugar,sPct>20?badge('danger','hamuje drożdże'):sPct>10?badge('warn','spowalnia'):'');
+    h+=row('🧂 Sól',slPct,salt,slPct>2.2?badge('danger','za dużo'):slPct>=1.5?badge('ok','ok'):'');
+    h+=row('🫧 Drożdże świeże',yPct,yeast,'<span style="color:#888;font-size:11px">suche: '+Math.round(yeast/3)+'g</span>');
+    h+=`<tr class="hydration-row"><td>💧 Hydratacja efektywna</td><td colspan="2"><strong>${realHyd.toFixed(1)}%</strong></td><td>${realHyd<45?badge('warn','suche'):realHyd>65?badge('warn','luźne'):badge('ok','ok')}</td></tr>`;
+    h+=`<tr class="total-row"><td>RAZEM CIASTO</td><td></td><td>${Math.round(total)} g</td><td></td></tr>`;
+    document.getElementById('results').innerHTML=h;
+
+    let w='';
+    if(milkWater<0) w+=`<div class="warning">⚠️ Jaja dają hydratację ${(egWater/f*100).toFixed(1)}%, co przekracza cel ${hyd}%. Zwiększ hydratację lub zmniejsz jaja. Mleko = 0.</div>`;
+    if(sPct>20) w+=`<div class="warning">⚠️ Cukier ${sPct}% – silnie hamuje drożdże. Wydłuż wyrastanie lub dodaj więcej drożdży.</div>`;
+    if(bPct>35) w+=`<div class="warning">⚠️ Masło ${bPct}% – ciasto typu brioche. Rozważ chłodzenie ciasta w lodówce (retard 8–12h).</div>`;
+    const pieces=Math.round(total/80);
+    w+=`<div class="info">ℹ️ Z tego ciasta uformujesz ok. <strong>${pieces} drożdżówek</strong> po ~80g każda.</div>`;
+    document.getElementById('warnings').innerHTML=w;
+
+    // --- CZASY ---
+    const yF=4/yPct;
+    const sF=1+Math.max(0,(sPct-10))*.03;
+    const fF=1+Math.max(0,(bPct-15))*.02;
+    const rise1=Math.round(60*yF*sF*fF);
+    const rise2=Math.round(rise1*.5);
+    let bTemp;
+    if(sPct<10)bTemp=190;else if(sPct<15)bTemp=185;else if(sPct<20)bTemp=180;else if(sPct<25)bTemp=175;else bTemp=170;
+    const bTempConv=bTemp-10;
+
+    let p='';
+    p+=step(1,'Rozpuszczenie drożdży',
+        `Drożdże (${r(yeast)}g) rozkrusz w ciepłym mleku (${r(milk)}g, temp. <strong>30–35°C</strong>). Dodaj 1 łyżkę cukru. Czekaj aż się spienią.`,'10 min');
+    p+=step(2,'Wyrabianie ciasta',
+        `Mąka (${r(f)}g) + cukier (${r(sugar)}g) + sól (${r(salt)}g) → wymieszaj na sucho. Dodaj zaczyn + jaja (${r(eg)}g). Wyrabiaj mikserem z hakiem lub ręcznie, aż ciasto zacznie się formować i odchodzić od ścianek.`,'10–12 min');
+    p+=step(3,'Dodanie masła',
+        `Dodaj <strong>miękkie</strong> masło (${r(butter)}g) w 3–4 partiach. Po każdej partii wyrabiaj aż wchłonie. Kontynuuj do <strong>testu okienka</strong> – ciasto rozciągnięte tworzy półprzezroczystą membranę.`,'8–10 min');
+    p+=step(4,'I wyrastanie (fermentacja)',
+        `Włóż ciasto do naoliwionej miski, przykryj folią. Temp. <strong>28–32°C</strong>. Ciasto musi <strong>podwoić objętość</strong>. Przy ${yPct}% drożdży i ${sPct}% cukru to zajmie ok. ${rise1} min.`
+        ,`~${rise1} min`);
+    p+=step(5,'Odgazowanie i formowanie',
+        `Przełóż ciasto na lekko podsypany blat. Delikatnie odgaz. Podziel na <strong>${pieces} kawałków</strong> (~80g). Uformuj bułki, dodaj nadzienie, zlepiaj szwy.`,'15 min');
+    p+=step(6,'II wyrastanie (rozrost)',
+        `Ułóż na blasze z papierem (odstępy 5 cm!). Przykryj ścierką. Ciasto powinno urosnąć o <strong>~50%</strong>.`
+        ,`~${rise2} min`);
+    p+=step(7,'Smarowanie',
+        `Rozkłóć 1 jajko + 1 łyżka mleka. Delikatnie posmaruj pędzelkiem. Opcjonalnie posyp kruszonką lub cukrem perlistym.`,'3 min');
+    p+=step(8,'Pieczenie',
+        `Piekarnik nagrzany <strong>${bTemp}°C góra-dół</strong> (termoobieg: ${bTempConv}°C). Piecz do złotego koloru. Gotowe gdy stuknięcie w spód daje pusto dźwięk. <strong>Nie otwieraj piekarnika przez pierwsze 10 min!</strong>`
+        ,'15–20 min');
+    document.getElementById('process').innerHTML=p;
+
+    const tMin=10+11+9+rise1+15+rise2+3+18;
+    const tH=Math.floor(tMin/60),tM=tMin%60;
+    document.getElementById('totalTime').innerHTML=`⏱️ Łączny czas: ~${tH>0?tH+'h ':''}${tM} min &nbsp;|&nbsp; 🌡️ Pieczenie: ${bTemp}°C`;
+}
+
+function n(id){return parseFloat(document.getElementById(id).value)}
+function r(v){return Math.round(v)}
+function badge(type,text){return `<span class="badge badge-${type}">${text}</span>`}
+function row(name,pct,grams,status){
+    return `<tr><td>${name}</td><td>${pct}%</td><td class="grams">${r(grams)} g</td><td>${status||''}</td></tr>`;
+}
+function step(num,title,desc,time){
+    return `<div class="process-step"><div class="step-number">${num}</div><div class="step-content"><h3>${title}</h3><span class="step-time">⏱️ ${time}</span><p>${desc}</p></div></div>`;
+}
+calc();
+</script>
+</body>
+</html>
